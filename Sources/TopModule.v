@@ -13,7 +13,7 @@
 
 module TopModule(Clk, Rst,Led);
   input Clk, Rst;
-  output wire [7:0] Led;
+  output wire [7:0] Led; 
 
   wire IorD, MemWrite, IRWrite, RegDst, MemtoReg, RegWrite, ALUSrcA, Branch, Zero, NEF;
   wire [31:0] PCp, Pc, ALUOut, Adr, A, B, RD, Instr, Data, WD3, RD1, RD2, SignImm, SrcA, SrcB, ALUResult;
