@@ -6,7 +6,7 @@ module InstrDataMem(We, Clk, Addr, Wd, Rd);
   reg [31:0] MEM[63:0];
 
   initial begin
-    $readmemh("instrData_data.hex", MEM); 
+    $readmemh("../Sources/instrData_data.hex", MEM); 
   end
   always @(posedge Clk) begin
     //$display("Addr %d MEM %d", Addr, MEM[Addr]);
