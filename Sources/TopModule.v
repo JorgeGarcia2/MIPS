@@ -2,7 +2,6 @@
 
 `include "Alu.v"
 `include "AluControl.v"
-`include "Flopenr_2.v"
 `include "Flopenr.v"
 `include "InstrDataMem.v"
 `include "MainControl.v"
