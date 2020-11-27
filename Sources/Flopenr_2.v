@@ -1,4 +1,4 @@
-module flopenr_2 #(parameter WIDTH = 8)
+module Flopenr_2 #(parameter WIDTH = 8)
   (input clk, reset,
    input en,
    input [WIDTH-1:0] d1, d2,
