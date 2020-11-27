@@ -1,14 +1,13 @@
-`include "alu_des.v"
-`include "aluControl_des.v"
-`include "flopenr_2_des.v"
-`include "flopenr_des.v"
-`include "instrDataMem_des.v"
-`include "mainControl_des.v"
-`include "mux2_des.v"
-`include "mux4_des.v"
-//`include "pc_des.v"
-`include "regMem_des.v"
-`include "signExt_des.v"
+`include "alu.v"
+`include "aluControl.v"
+`include "flopenr_2.v"
+`include "flopenr.v"
+`include "instrDataMem.v"
+`include "mainControl.v"
+`include "mux2.v"
+`include "mux4.v"
+`include "regMem.v"
+`include "signExt.v"
 
 module TopModule(Clk, Rst);
   input Clk, Rst;
@@ -19,25 +18,25 @@ module TopModule(Clk, Rst);
   wire [1:0] ALUOp, PCSrc, ALUSrcB;
   wire [2:0] ALUControl;
 
-  flopenr #(32) FlopPc(Clk, Rst, (PCWrite|(Branch&(Zero^NEF))), PCp, Pc); //PC flip-flop
+  Flopenr #(32) FlopPc(Clk, Rst, (PCWrite|(Branch&(Zero^NEF))), PCp, Pc); //PC flip-flop
   Mux2 #(32) mux_PC(IorD, Pc, ALUOut, Adr); //IorD
   InstrDataMem IDmem(MemWrite, Clk, Adr, B, RD); //MemWrite
-  flopenr #(32) Flop0(Clk, 1'b0, IRWrite, RD, Instr); //Instruction
-  flopenr #(32) Flop1(Clk, 1'b0, 1'b1, RD, Data); //Data
+  Flopenr #(32) Flop0(Clk, 1'b0, IRWrite, RD, Instr); //Instruction
+  Flopenr #(32) Flop1(Clk, 1'b0, 1'b1, RD, Data); //Data
   Mux2 #(5) MuxRF1(RegDst, Instr[20:16], Instr[15:11], A3);
   Mux2 #(32) MuxRF2(MemtoReg, ALUOut, Data, WD3);
   RegMem RegFile(Clk, RegWrite, Instr[25:21], Instr[20:16], A3, WD3, RD1, RD2);
   SignExt SExtend(Instr[15:0], SignImm);
   
-  flopenr #(32) FlopRF1(Clk, 1'b0, 1'b1, RD1, A); //FF1-Register file
-  flopenr #(32) FlopRF2(Clk, 1'b0, 1'b1, RD2, B); //FF2-Register file
+  Flopenr #(32) FlopRF1(Clk, 1'b0, 1'b1, RD1, A); //FF1-Register file
+  Flopenr #(32) FlopRF2(Clk, 1'b0, 1'b1, RD2, B); //FF2-Register file
 
   Mux2 #(32) MuxALUA(ALUSrcA, Pc, A, SrcA);
   Mux4 MuxALUB(ALUSrcB, B, 1, SignImm, SignImm, SrcB);
   
   AluControl ALUC(Instr[5:0], ALUOp, ALUControl); //ALUOp
   Alu ALU(ALUControl, SrcA, SrcB, ALUResult, Zero); //ALUControl
-  flopenr #(32) FlopALU(Clk, 1'b0, 1'b1, ALUResult, ALUOut); //Ese 0 es el reset y el 1 es el enable
+  Flopenr #(32) FlopALU(Clk, 1'b0, 1'b1, ALUResult, ALUOut); //Ese 0 es el reset y el 1 es el enable
 
   Mux4 MuxPCsrc(PCSrc, ALUResult, ALUOut, {Pc[31:26],Instr[25:0]}, {Pc[31:26],Instr[25:0]}, PCp);
   MainControl Control(Clk,Rst,Instr[31:26],IorD,MemWrite,IRWrite,RegDst, MemtoReg,RegWrite,ALUSrcA,ALUSrcB,ALUOp,Branch,PCWrite,PCSrc,NEF);
