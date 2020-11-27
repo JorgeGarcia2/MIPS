@@ -3,7 +3,7 @@ module Testbench;
   reg Clk_TB, Rst_TB;
   wire [7:0] Led;
   
-  TopModule UU1(Clk_TB, Rst_TB, Led);
+  TopModule UU1(Clk_TB, Rst_TB, Led, 1'b1);
   
   initial
     begin
@@ -14,7 +14,7 @@ module Testbench;
       Rst_TB = 0;
       #1.5 Rst_TB = 1;
       #0.5 Rst_TB = 0;
-      #150
+      #700
       //#30
       $finish;
     end
