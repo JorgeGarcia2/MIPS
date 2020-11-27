@@ -1,4 +1,4 @@
-module AluControl(Func, AluOp, AluCtrl);
+module ALUControl(Func, AluOp, AluCtrl);
   input [5:0] Func;
   input [1:0] AluOp;
   output reg [2:0] AluCtrl;

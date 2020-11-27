@@ -38,8 +38,8 @@ module TopModule(Clk, Rst,Led);
   Mux2 #(32) MuxALUA(ALUSrcA, Pc, A, SrcA);
   Mux4 MuxALUB(ALUSrcB, B, 1, SignImm, SignImm, SrcB);
   
-  AluControl ALUC(Instr[5:0], ALUOp, ALUControl); //ALUOp
-  Alu ALU(ALUControl, SrcA, SrcB, ALUResult, Zero); //ALUControl
+  ALUControl ALUC(Instr[5:0], ALUOp, ALUControl); //ALUOp
+  ALU ALU(ALUControl, SrcA, SrcB, ALUResult, Zero); //ALUControl
   Flopenr #(32) FlopALU(Clk, 1'b0, 1'b1, ALUResult, ALUOut); //Ese 0 es el reset y el 1 es el enable
 
   Mux4 MuxPCsrc(PCSrc, ALUResult, ALUOut, {Pc[31:26],Instr[25:0]}, {Pc[31:26],Instr[25:0]}, PCp);

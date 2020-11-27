@@ -1,4 +1,4 @@
-module  Alu(AluCtrl, A, B, AluOut, Zero);
+module  ALU(AluCtrl, A, B, AluOut, Zero);
   input [31:0] A, B;
   input [2:0] AluCtrl;    
   output reg [31:0] AluOut;
