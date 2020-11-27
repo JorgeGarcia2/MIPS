@@ -1,8 +1,9 @@
 `timescale 1ns/1 ps
 module TopModule_TB;
   reg Clk_TB, Rst_TB;
+  wire [7:0] Led;
   
-  TopModule UU1(Clk_TB, Rst_TB);
+  TopModule UU1(Clk_TB, Rst_TB, Led);
   
   initial
     begin
@@ -13,8 +14,8 @@ module TopModule_TB;
       Rst_TB = 0;
       #1.5 Rst_TB = 1;
       #0.5 Rst_TB = 0;
-      //#150
-      #30
+      #150
+      //#30
       $finish;
     end
   

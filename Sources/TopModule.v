@@ -10,7 +10,7 @@
 `include "RegMem.v"
 `include "SignExt.v"
 
-module TopModule(Clk, Rst,Led);
+module TopModule(Clk, Rst, Led);
   input Clk, Rst;
   output wire [7:0] Led; 
 
