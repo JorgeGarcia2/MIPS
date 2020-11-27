@@ -20,7 +20,7 @@ module TopModule(in_Clk, Rst,Led,EnClk);
   wire [4:0] A3;
   wire [1:0] ALUOp, PCSrc, ALUSrcB;
   wire [2:0] ALUControl;
-  
+   
   
   //Shield
   reg Hz1CLK=1'h0;
