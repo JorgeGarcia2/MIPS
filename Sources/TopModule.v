@@ -1,13 +1,13 @@
-`include "alu.v"
-`include "aluControl.v"
-`include "flopenr_2.v"
-`include "flopenr.v"
-`include "instrDataMem.v"
-`include "mainControl.v"
-`include "mux2.v"
-`include "mux4.v"
-`include "regMem.v"
-`include "signExt.v"
+`include "Alu.v"
+`include "AluControl.v"
+`include "Flopenr_2.v"
+`include "Flopenr.v"
+`include "InstrDataMem.v"
+`include "MainControl.v"
+`include "Mux2.v"
+`include "Mux4.v"
+`include "RegMem.v"
+`include "SignExt.v"
 
 module TopModule(Clk, Rst);
   input Clk, Rst;
