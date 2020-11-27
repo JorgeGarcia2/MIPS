@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
-`include "Alu.v"
-`include "AluControl.v"
+`include "ALU.v"
+`include "ALUControl.v"
 `include "Flopenr.v"
 `include "InstrDataMem.v"
 `include "MainControl.v"
