@@ -11,14 +11,17 @@
 `include "RegMem.v"
 `include "SignExt.v"
 
-module TopModule(Clk, Rst);
+module TopModule(Clk, Rst,Led);
   input Clk, Rst;
+  output wire [7:0] Led;
 
   wire IorD, MemWrite, IRWrite, RegDst, MemtoReg, RegWrite, ALUSrcA, Branch, Zero, NEF;
   wire [31:0] PCp, Pc, ALUOut, Adr, A, B, RD, Instr, Data, WD3, RD1, RD2, SignImm, SrcA, SrcB, ALUResult;
   wire [4:0] A3;
   wire [1:0] ALUOp, PCSrc, ALUSrcB;
   wire [2:0] ALUControl;
+  
+  assign Led = RD1[7:0];
 
   Flopenr #(32) FlopPc(Clk, Rst, (PCWrite|(Branch&(Zero^NEF))), PCp, Pc); //PC flip-flop
   Mux2 #(32) mux_PC(IorD, Pc, ALUOut, Adr); //IorD
