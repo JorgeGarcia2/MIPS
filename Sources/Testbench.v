@@ -8,7 +8,7 @@ module Testbench;
   initial
     begin
       $dumpfile("TopModule.vcd");
-      $dumpvars(0,TopModule_TB);
+      $dumpvars(0,Testbench);
       
       Clk_TB = 0;
       Rst_TB = 0;
