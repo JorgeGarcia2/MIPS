@@ -6,9 +6,11 @@ NET "Led[3]" LOC = "K14" ;
 NET "Led[4]" LOC = "E16" ;
 NET "Led[5]" LOC = "P16" ;
 NET "Led[6]" LOC = "E4" ;
-NET "Led[7]" LOC = "P4" ;
-NET "Rst" LOC = "B18" ;
+NET "OUT_CLK" LOC = "P4" ;
+NET "Rst" LOC = "E18" ;
 NET "EnClk" LOC = "G18" ;
+NET "Manual_clk" LOC = "B18" ;
+
 #NET "P" LOC = "G18" ;
 #NET "L" LOC = "H18" ;
 #NET "Q" LOC = "K14" ;

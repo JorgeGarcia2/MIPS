@@ -11,24 +11,29 @@
 `include "SignExt.v"
 
 
-module TopModule(in_Clk, Rst,Led,EnClk);
-  input in_Clk, Rst, EnClk;
-  output wire [7:0] Led; 
+module TopModule(in_Clk, Rst,Led,Manual_clk,EnClk,OUT_CLK);
+  input in_Clk, Rst, EnClk,Manual_clk;
+  output wire [6:0] Led; 
+  output OUT_CLK;
 
   wire IorD, MemWrite, IRWrite, RegDst, MemtoReg, RegWrite, ALUSrcA, Branch, Zero, NEF;
   wire [31:0] PCp, Pc, ALUOut, Adr, A, B, RD, Instr, Data, WD3, RD1, RD2, SignImm, SrcA, SrcB, ALUResult;
   wire [4:0] A3;
   wire [1:0] ALUOp, PCSrc, ALUSrcB;
   wire [2:0] ALUControl;
-   
+  
   
   //Shield
+  
   reg Hz1CLK=1'h0;
   wire Clk;
   assign Clk=(EnClk==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
+  //assign Clk=(EnClk==1'h1)? Hz1CLK:M_clk;  //en lugar de 0 va la entrada del bus
+  assign OUT_CLK = Clk;
   
-  assign Led = (RegWrite==1)? WD3[7:0]:0;
-  
+  //assign Led = (RegWrite==1)? WD3[6:0]:0;
+  assign Led = Instr[6:0];
+   
   reg [31:0] contHz=32'h0;
   
 	always@(posedge in_Clk)
@@ -36,7 +41,8 @@ module TopModule(in_Clk, Rst,Led,EnClk);
 		if(contHz==0) 
 			begin
 			//contHz=32'h1;
-			contHz=32'h02FAF080;
+			//contHz=32'h02FAF080;
+			contHz=32'h01FAF080;
 			Hz1CLK=!Hz1CLK;
 			end
 		else
