@@ -10,8 +10,9 @@
 `include "RegMem.v"
 `include "SignExt.v"
 
-module TopModule(Clk, Rst, Led);
-  input Clk, Rst;
+
+module TopModule(in_Clk, Rst,Led,EnClk);
+  input in_Clk, Rst, EnClk;
   output wire [7:0] Led; 
 
   wire IorD, MemWrite, IRWrite, RegDst, MemtoReg, RegWrite, ALUSrcA, Branch, Zero, NEF;
@@ -20,7 +21,29 @@ module TopModule(Clk, Rst, Led);
   wire [1:0] ALUOp, PCSrc, ALUSrcB;
   wire [2:0] ALUControl;
   
-  assign Led = RD1[7:0];
+  
+  //Shield
+  reg Hz1CLK=1'h0;
+  wire Clk;
+  assign Clk=(EnClk==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
+  assign Led = WD3[7:0];
+  
+  reg [31:0] contHz=32'h0;
+  
+	always@(posedge in_Clk)
+	begin
+		if(contHz==0) 
+			begin
+			contHz=32'h02FAF080; 
+			Hz1CLK=!Hz1CLK;
+			end
+		else
+			begin
+				contHz=contHz-1'h1;
+			end
+	end
+  //END SHIELD
+
 
   Flopenr #(32) FlopPc(Clk, Rst, (PCWrite|(Branch&(Zero^NEF))), PCp, Pc); //PC flip-flop
   Mux2 #(32) mux_PC(IorD, Pc, ALUOut, Adr); //IorD
