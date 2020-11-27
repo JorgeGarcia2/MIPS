@@ -1,5 +1,5 @@
 `timescale 1ns/1 ps
-module TopModule_TB;
+module Testbench;
   reg Clk_TB, Rst_TB;
   wire [7:0] Led;
   
