@@ -7,7 +7,7 @@ module RegMem (Clk, RegWrite, ReadReg1, ReadReg2, WriteReg, WriteData, ReadData1
   reg [31:0] RAM [31:0];
   initial
     begin
-      $readmemh("D:/Bibliotecas/Documents/Repositorios/Multicycle/Sources/regMem_data.hex", RAM); 
+      $readmemh("../Sources/regMem_data.hex", RAM); 
     end
   always @(posedge Clk)
 begin
