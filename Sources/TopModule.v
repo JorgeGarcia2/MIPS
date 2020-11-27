@@ -34,7 +34,8 @@ module TopModule(in_Clk, Rst,Led,EnClk);
 	begin
 		if(contHz==0) 
 			begin
-			contHz=32'h02FAF080; 
+			contHz=32'h1;
+			//contHz=32'h02FAF080;
 			Hz1CLK=!Hz1CLK;
 			end
 		else
