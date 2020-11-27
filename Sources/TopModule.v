@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 `include "Alu.v"
 `include "AluControl.v"
 `include "Flopenr_2.v"
