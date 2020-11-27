@@ -20,7 +20,7 @@ module TopModule(Clk, Rst, Led);
   wire [1:0] ALUOp, PCSrc, ALUSrcB;
   wire [2:0] ALUControl;
   
-  assign Led = RD2[7:0];
+  assign Led = RD1[7:0];
 
   Flopenr #(32) FlopPc(Clk, Rst, (PCWrite|(Branch&(Zero^NEF))), PCp, Pc); //PC flip-flop
   Mux2 #(32) mux_PC(IorD, Pc, ALUOut, Adr); //IorD
