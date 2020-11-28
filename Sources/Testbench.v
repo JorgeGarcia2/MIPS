@@ -1,9 +1,10 @@
 `timescale 1ns/1 ps
 module Testbench;
   reg Clk_TB, Rst_TB;
-  wire [7:0] Led;
+  wire [6:0] Led;
+  wire Clk_ou;
   
-  TopModule UU1(Clk_TB, Rst_TB, Led, 1'b1);
+  TopModule UU1(Clk_TB, Rst_TB, Led, 1'b1, Clk_ou);
   
   initial
     begin
