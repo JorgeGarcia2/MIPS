@@ -26,7 +26,7 @@ module TopModule(in_Clk, Rst,Led,EnClk);
   reg Hz1CLK=1'h0;
   wire Clk;
   assign Clk=(EnClk==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
-  assign Led = WD3[7:0];
+  assign Led = Pc[7:0];
   
   reg [31:0] contHz=32'h0;
   
@@ -34,8 +34,8 @@ module TopModule(in_Clk, Rst,Led,EnClk);
 	begin
 		if(contHz==0) 
 			begin
-			//contHz=32'h1;
-			contHz=32'h02FAF080;
+			contHz=32'h1;
+			//contHz=32'h02FAF080;
 			Hz1CLK=!Hz1CLK;
 			end
 		else
