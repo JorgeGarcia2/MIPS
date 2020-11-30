@@ -113,9 +113,20 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 						(contDisplay==2'h2)? 4'b1011:
 						(contDisplay==2'h1)? 4'b1101:
 						4'b1110;
+	
+	//SHOW EACH DISPLAY
+	reg [11:0] valShow;
+	always@(negedge Clk)
+	begin
+		if(RegWrite)
+		begin
+			valShow=WD3[11:0];
+		end
+	end
 
 	//SHOW SYMBOLS IN DISPLAY (DECODER)
 	wire [3:0] s;
+	wire [3:0] Ctrl_State;
 
 	assign s=(contDisplay==2'h3)? Ctrl_State   : //DISPLAY 1 "S"
 				(contDisplay==2'h2)? valShow[11:8]: //DISPLAY 2 "_"
@@ -141,17 +152,6 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 						  (s==4'hE)? 8'b0110_0001: //E
 						  (s==4'hF)? 8'b0111_0001: //F		  
 						  8'b11101110; //_.*/
-	
-	//SHOW EACH DISPLAY
-	reg [11:0] valShow;
-	wire [3:0] Ctrl_State;
-	always@(negedge Clk)
-	begin
-		if(RegWrite)
-		begin
-			valShow=WD3[11:0];
-		end
-	end
   ///////
   
   reg Hz1CLK = 1'h0;
