@@ -1,9 +1,11 @@
-module MainControl(clk,reset,Op,IorD,MemWrite,IRWrite,RegDst, MemtoReg,RegWrite,ALUSrcA,ALUSrcB,ALUOp,Branch,PCWrite,PCSrc,NEF);
+module MainControl(clk,reset,Op,IorD,MemWrite,IRWrite,RegDst, MemtoReg,RegWrite,ALUSrcA,ALUSrcB,ALUOp,Branch,PCWrite,PCSrc,NEF, statereg);
   input clk,reset;
   input [5:0] Op;
   output IorD,MemWrite, IRWrite,RegDst,MemtoReg,RegWrite,ALUSrcA,Branch,PCWrite,NEF;
   
   output [1:0] ALUSrcB,PCSrc,ALUOp;
+  
+  output [3:0] statereg;
   
   
   reg [15:0]Out_R;
@@ -91,6 +93,8 @@ module MainControl(clk,reset,Op,IorD,MemWrite,IRWrite,RegDst, MemtoReg,RegWrite,
     	default: Out_R <= 16'b0000_xxxxx_xxxx_xx_x;
       endcase
     end
+	 
+	 assign statereg = state;
   
   
 endmodule
