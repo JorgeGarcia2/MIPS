@@ -10,14 +10,18 @@ NET "Led[6]" LOC = "E4" ;
 NET "Clk" LOC = "P4" ;
 
 NET "Rst" LOC = "H13" ;
-NET "EnClk" LOC = "G18" ;
+#NET "selButton" LOC = "B18";
+NET "selButton" LOC = "E18";
 
-NET "selButton" LOC = "B18";
+#NET "EnClk" LOC = "G18" ;
+NET "EnClk" LOC = "B18" ;
 
-NET "selSignal[0]" LOC = "L14";
-NET "selSignal[1]" LOC = "L13";
-NET "selSignal[2]" LOC = "N17";
-NET "selSignal[3]" LOC = "R17";
+NET "SW_En_Data" LOC = "N17";
+NET "in_Data[0]" LOC = "G18";
+NET "in_Data[1]" LOC = "H18";
+NET "in_Data[2]" LOC = "K18";
+
+#NET "selSignal[3]" LOC = "R17";
 
 NET "selDisp[0]" LOC = "F17";
 NET "selDisp[1]" LOC = "H17";

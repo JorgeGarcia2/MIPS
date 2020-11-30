@@ -11,9 +11,10 @@
 `include "SignExt.v"
 
 
-module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, selSignal,selButton);
-  input in_Clk, Rst, EnClk, selButton;
-  input [3:0] selSignal;
+//module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, selSignal,selButton);
+module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Data,selButton);
+  input in_Clk, Rst, EnClk, selButton,SW_En_Data;
+  input [2:0] in_Data;
   output wire [6:0] Led;
   output wire Clk;
   output wire [7:0] disp7Seg;
@@ -33,8 +34,8 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, selSignal,selButt
 	always@(posedge in_Clk)
 	begin
 		if(cont50Hz==0)begin
-			//cont50Hz = 20'hF4240;
-			cont50Hz = 20'h1;
+			cont50Hz = 20'hF4240;
+			//cont50Hz = 20'h1;
 			Hz50CLK=!Hz50CLK;end
 		else begin cont50Hz=cont50Hz-1'h1; end
 	end
@@ -60,7 +61,7 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, selSignal,selButt
 	
 	
 //Mux Data Part 
-
+/*
 	wire [15:0] Data16x;
 	wire [31:0] Data32x;
    assign Dato16x=(selButton==1'h0)? Data32x[15:0] : Data32x[31:16];
@@ -73,6 +74,10 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, selSignal,selButt
 						(selSignal==4'h1)? 32'h0123ADCA :
 						(selSignal==4'h2)? 32'h0456AFCB :
 						32'hFFFFFFFF;
+*/
+
+
+
 
 //assign s=(contDisplay==2'h3)? 4'hA : //DISPLAY 1 "S"						
   //assign Led = (RegWrite==1)? Data16x[6:0]:0; //concatenar los bits de CONTROL
@@ -112,7 +117,7 @@ assign disp7Seg  =  (s==4'h0)? 8'b0000_0011: //0
 						  (s==4'h4)? 8'b0000_0001: //4
 						  (s==4'h5)? 8'b0100_1001: //5
 						  (s==4'h6)? 8'b0100_0001: //6
-						  (s==4'h7)? 8'b0001_1101: //7
+						  (s==4'h7)? 8'b0001_1111: //7
 						  (s==4'h8)? 8'b0000_0001: //8
 						  (s==4'h9)? 8'b0000_1001: //9
 						  (s==4'hA)? 8'b0001_0001: //A
@@ -131,17 +136,29 @@ assign s=(contDisplay==2'h3)? Data16x[15:12]: //DISPLAY 1 "S"
 			(contDisplay==2'h0)? Data16x[3:0]:		//DISPLAY 4  "DATO"
 			4'b1111; //EXTRA 
 */
-assign s=(contDisplay==2'h3)? 4'hA : //DISPLAY 1 "S"
-			(contDisplay==2'h2)? 4'hE : //DISPLAY 2 "_"
-			(contDisplay==2'h1)? 4'hD : //DISPLAY 3 "0"
-			(contDisplay==2'h0)? 4'h2 :		//DISPLAY 4  "DATO"
+reg [31:0] valShow;
+always@(negedge Clk)
+begin
+	if(RegWrite)
+	begin
+		valShow=WD3;
+	end
+end
+
+assign s=(contDisplay==2'h3)? valShow[15:12] : //DISPLAY 1 "S"
+			(contDisplay==2'h2)? valShow[11:8] : //DISPLAY 2 "_"
+			(contDisplay==2'h1)? valShow[7:4] : //DISPLAY 3 "0"
+			(contDisplay==2'h0)? valShow[3:0] :		//DISPLAY 4  "DATO"
 			4'b1111; //EXTRA 
   ///////
   
   reg Hz1CLK = 1'h0;
   assign Clk=(clkEN==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
   
-  assign Led = (RegWrite==1)? WD3[6:0]:0; //concatenar los bits de CONTROL
+  //assign Led = (RegWrite==1)? WD3[6:0]:0; //concatenar los bits de CONTROL
+  assign Led[2:0] = in_Data[2:0]; //concatenar los bits de CONTROL
+  assign Led[5:3] = 3'h0; //concatenar los bits de CONTROL 
+  assign Led[6] = SW_En_Data; //concatenar los bits de CONTROL
   //assign Led = Pc[6:0];
   //assign Led = Instr[6:0];
   //assign Led = WD3[6:0];
@@ -153,8 +170,8 @@ assign s=(contDisplay==2'h3)? 4'hA : //DISPLAY 1 "S"
 	begin
 		if(contHz==0)
 			begin
-			contHz=32'h1;
-			//contHz=32'h00FAF080; //32'h01FAF080
+			//contHz=32'h1;
+			contHz=32'h00FAF080; //32'h01FAF080
 			Hz1CLK=!Hz1CLK;
 			end
 		else
@@ -179,7 +196,10 @@ assign s=(contDisplay==2'h3)? 4'hA : //DISPLAY 1 "S"
   Flopenr #(32) FlopRF2(Clk, 1'b0, 1'b1, RD2, B); //FF2-Register file
 
   Mux2 #(32) MuxALUA(ALUSrcA, Pc, A, SrcA);
-  Mux4 MuxALUB(ALUSrcB, B, 1, SignImm, SignImm, SrcB);
+  //Mux4 MuxALUB(ALUSrcB, B, 1, SignImm, SignImm, SrcB);
+  //(Alusrcb<2)?Alusrcb:{switch,Alusrcb[0]}
+  Mux4 MuxALUB((ALUSrcB[1])?{1'h1,SW_En_Data}:ALUSrcB, B, 32'h1, SignImm, {29'h0,in_Data}, SrcB);
+  //,ALUSrcB[0]
   
   ALUControl ALUC(Instr[5:0], ALUOp, ALUControl); //ALUOp
   ALU ALU(ALUControl, SrcA, SrcB, ALUResult, Zero); //ALUControl
