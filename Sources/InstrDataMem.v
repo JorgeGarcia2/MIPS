@@ -5,15 +5,23 @@ module InstrDataMem(We, Clk, Addr, Wd, Rd);
  
   reg [31:0] MEM[63:0];
 
-  initial begin
-    $readmemh("../Sources/instrData_data.hex", MEM); 
+  initial 
+    //$readmemh("../Sources/instrData_data.data", MEM, 0, 63); 
+  begin
+    //$readmemh("../Sources/instrData_data.hex", MEM); 
+      $readmemh("../Sources/instrData_data.data", MEM, 0, 63); 
+    //$readmemh("../Sources/instrData_data.coe", MEM); 
+    //$readmemh("InstrMem.mem", MEM); 
   end
-  always @(posedge Clk) begin
+  
+	always @(posedge Clk) 
+	begin
     //$display("Addr %d MEM %d", Addr, MEM[Addr]);
-	  if (We) begin // write enable
+	  if (We) 
+		begin // write enable
 		  MEM[Addr] <= Wd;
+		end
 	end
-end
  
   assign Rd = MEM[Addr]; // word aligned
 endmodule

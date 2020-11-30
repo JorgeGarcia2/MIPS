@@ -1,11 +1,19 @@
 `timescale 1ns/1 ps
+/*
+module Testbench;
+reg in_Clk_TB,Rst_TB;
+wire [6:0] Led;
+wire Clk;
+*/
+
 module Testbench;
   reg Clk_TB, Rst_TB;
   wire [6:0] Led;
   wire Clk_ou;
-  
+
   TopModule UU1(Clk_TB, Rst_TB, Led, 1'b1, Clk_ou);
-  
+
+  //TopModule UU1(in_Clk_TB, Rst_TB, Led, 1'b1, Clk);
   initial
     begin
       $dumpfile("TopModule.vcd");

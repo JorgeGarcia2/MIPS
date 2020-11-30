@@ -1,4 +1,5 @@
 NET "in_Clk" LOC = "B8" ;
+
 NET "Led[0]" LOC = "J14" ;
 NET "Led[1]" LOC = "J15" ;
 NET "Led[2]" LOC = "K15" ;
@@ -7,9 +8,29 @@ NET "Led[4]" LOC = "E16" ;
 NET "Led[5]" LOC = "P16" ;
 NET "Led[6]" LOC = "E4" ;
 NET "Clk" LOC = "P4" ;
-NET "Rst" LOC = "E18" ;
+
+NET "Rst" LOC = "H13" ;
 NET "EnClk" LOC = "G18" ;
 
+NET "selButton" LOC = "B18";
+
+NET "selSignal[0]" LOC = "L14";
+NET "selSignal[1]" LOC = "L13";
+NET "selSignal[2]" LOC = "N17";
+NET "selSignal[3]" LOC = "R17";
+
+NET "selDisp[0]" LOC = "F17";
+NET "selDisp[1]" LOC = "H17";
+NET "selDisp[2]" LOC = "C18";
+NET "selDisp[3]" LOC = "F15";
+NET "disp7Seg[0]" LOC = "C17";
+NET "disp7Seg[1]" LOC = "H14";
+NET "disp7Seg[2]" LOC = "J17";
+NET "disp7Seg[3]" LOC = "G14";
+NET "disp7Seg[4]" LOC = "D16";
+NET "disp7Seg[5]" LOC = "D17";
+NET "disp7Seg[6]" LOC = "F18";
+NET "disp7Seg[7]" LOC = "L18";
 #NET "P" LOC = "G18" ;
 #NET "L" LOC = "H18" ;
 #NET "Q" LOC = "K14" ;
