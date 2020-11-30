@@ -10,7 +10,7 @@ module Testbench;
   reg Clk_TB, Rst_TB,selButton;
   wire [6:0] Led;
   wire Clk_ou;
-  wire [6:0] disp7Seg;
+  wire [7:0] disp7Seg;
   wire [3:0] selDisp;
   reg [3:0] selSignal;
   

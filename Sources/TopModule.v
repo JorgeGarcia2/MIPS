@@ -9,6 +9,7 @@
 `include "Mux4.v"
 `include "RegMem.v"
 `include "SignExt.v"
+`include "DispSeg.v"
 
 
 //module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, selSignal,selButton);
@@ -60,61 +61,74 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 	assign clkEN=&bReg;
 	
 	
-//Mux Data Part 
-/*
-	wire [15:0] Data16x;
-	wire [31:0] Data32x;
-   assign Dato16x=(selButton==1'h0)? Data32x[15:0] : Data32x[31:16];
-	//assign Data32x=Pc;
-   //assign Dato32x=(selSignal==4'h0)? Pc :
-	//					(selSignal==4'h1)? RD :
-	//					(selSignal==4'h2)? WD3 :
-	//					Instr;
-   assign Dato32x=(selSignal==4'h0)? 32'h0102ABCF :
-						(selSignal==4'h1)? 32'h0123ADCA :
-						(selSignal==4'h2)? 32'h0456AFCB :
-						32'hFFFFFFFF;
-*/
+	//Mux Data Part 
+	/*
+		wire [15:0] Data16x;
+		wire [31:0] Data32x;
+		assign Dato16x=(selButton==1'h0)? Data32x[15:0] : Data32x[31:16];
+		//assign Data32x=Pc;
+		//assign Dato32x=(selSignal==4'h0)? Pc :
+		//					(selSignal==4'h1)? RD :
+		//					(selSignal==4'h2)? WD3 :
+		//					Instr;
+		assign Dato32x=(selSignal==4'h0)? 32'h0102ABCF :
+							(selSignal==4'h1)? 32'h0123ADCA :
+							(selSignal==4'h2)? 32'h0456AFCB :
+							32'hFFFFFFFF;
+	*/
 
 
 
 
-//assign s=(contDisplay==2'h3)? 4'hA : //DISPLAY 1 "S"						
-  //assign Led = (RegWrite==1)? Data16x[6:0]:0; //concatenar los bits de CONTROL
-	
-	//////////////////////////////////////////////////DISPLAY
-reg [15:0] cont1kHz;
-reg CLKD2x;//1KHZ CLK DISPLAY
-always@(posedge in_Clk)
-begin	
-	if(cont1kHz==0) 
-		begin cont1kHz=16'hC350;  CLKD2x=!CLKD2x;end
-	else begin cont1kHz=cont1kHz-1'h1; end
-end
+	//assign s=(contDisplay==2'h3)? 4'hA : //DISPLAY 1 "S"						
+	  //assign Led = (RegWrite==1)? Data16x[6:0]:0; //concatenar los bits de CONTROL
+		
+		//////////////////////////////////////////////////DISPLAY
+	reg [15:0] cont1kHz;
+	reg CLKD2x;//1KHZ CLK DISPLAY
+	always@(posedge in_Clk)
+	begin	
+		if(cont1kHz==0) 
+			begin cont1kHz=16'hC350;  CLKD2x=!CLKD2x;end
+		else begin cont1kHz=cont1kHz-1'h1; end
+	end
 
-//DISPLAY MULTIPLEXER COUNTER
-reg [1:0] contDisplay = 2'h3;
-always@(posedge CLKD2x)
-begin
-	if(contDisplay==0) 
-		begin contDisplay=2'h3; end
-	else begin contDisplay=contDisplay-1'h1; end
-end
+	/*//DISPLAY MULTIPLEXER COUNTER
+	always@(posedge CLKD2x)
+	begin
+		selDisp = selDisp << 1;
+	end*/
 
-//DISPLAY SELECTOR
-assign selDisp=(contDisplay==2'h3)? 4'b0111:
-					(contDisplay==2'h2)? 4'b1011:
-					(contDisplay==2'h1)? 4'b1101:
-					4'b1110;
+	//DISPLAY MULTIPLEXER COUNTER
+	reg [1:0] contDisplay = 2'h3;
+	always@(posedge CLKD2x)
+	begin
+		if(contDisplay==0) 
+			begin contDisplay=2'h3; end
+		else begin contDisplay=contDisplay-1'h1; end
+	end
 
-//SHOW SYMBOLS IN DISPLAY (DECODER)
-wire [3:0] s; 
+	//DISPLAY SELECTOR
+	assign selDisp=(contDisplay==2'h3)? 4'b0111:
+						(contDisplay==2'h2)? 4'b1011:
+						(contDisplay==2'h1)? 4'b1101:
+						4'b1110;
+
+	//SHOW SYMBOLS IN DISPLAY (DECODER)
+	wire [3:0] s;
+
+	assign s=(contDisplay==2'h3)? Ctrl_State   : //DISPLAY 1 "S"
+				(contDisplay==2'h2)? valShow[11:8]: //DISPLAY 2 "_"
+				(contDisplay==2'h1)? valShow[7:4] : //DISPLAY 3 "0"
+				(contDisplay==2'h0)? valShow[3:0] : //DISPLAY 4  "DATO"
+				4'b1111; //EXTRA
+	DispSeg DS(s,disp7seg);
 							 	  //abcd_efgp
-assign disp7Seg  =  (s==4'h0)? 8'b0000_0011: //0
+/*assign disp7Seg  =  (s==4'h0)? 8'b0000_0011: //0
 						  (s==4'h1)? 8'b1001_1111: //1
 						  (s==4'h2)? 8'b0010_0101: //2
 						  (s==4'h3)? 8'b0000_1101: //3
-						  (s==4'h4)? 8'b0000_0001: //4
+						  (s==4'h4)? 8'b1001_1001: //4
 						  (s==4'h5)? 8'b0100_1001: //5
 						  (s==4'h6)? 8'b0100_0001: //6
 						  (s==4'h7)? 8'b0001_1111: //7
@@ -126,30 +140,18 @@ assign disp7Seg  =  (s==4'h0)? 8'b0000_0011: //0
 						  (s==4'hD)? 8'b1000_0101: //D
 						  (s==4'hE)? 8'b0110_0001: //E
 						  (s==4'hF)? 8'b0111_0001: //F		  
-						  8'b11101110; //_.
+						  8'b11101110; //_.*/
 	
-//SHOW EACH DISPLAY
-/*     
-assign s=(contDisplay==2'h3)? Data16x[15:12]: //DISPLAY 1 "S"
-			(contDisplay==2'h2)? Data16x[11:8]: //DISPLAY 2 "_"
-			(contDisplay==2'h1)? Data16x[7:4]: //DISPLAY 3 "0"
-			(contDisplay==2'h0)? Data16x[3:0]:		//DISPLAY 4  "DATO"
-			4'b1111; //EXTRA 
-*/
-reg [31:0] valShow;
-always@(negedge Clk)
-begin
-	if(RegWrite)
+	//SHOW EACH DISPLAY
+	reg [11:0] valShow;
+	wire [3:0] Ctrl_State;
+	always@(negedge Clk)
 	begin
-		valShow=WD3;
+		if(RegWrite)
+		begin
+			valShow=WD3[11:0];
+		end
 	end
-end
-
-assign s=(contDisplay==2'h3)? valShow[15:12] : //DISPLAY 1 "S"
-			(contDisplay==2'h2)? valShow[11:8] : //DISPLAY 2 "_"
-			(contDisplay==2'h1)? valShow[7:4] : //DISPLAY 3 "0"
-			(contDisplay==2'h0)? valShow[3:0] :		//DISPLAY 4  "DATO"
-			4'b1111; //EXTRA 
   ///////
   
   reg Hz1CLK = 1'h0;
@@ -159,10 +161,6 @@ assign s=(contDisplay==2'h3)? valShow[15:12] : //DISPLAY 1 "S"
   assign Led[2:0] = in_Data[2:0]; //concatenar los bits de CONTROL
   assign Led[5:3] = 3'h0; //concatenar los bits de CONTROL 
   assign Led[6] = SW_En_Data; //concatenar los bits de CONTROL
-  //assign Led = Pc[6:0];
-  //assign Led = Instr[6:0];
-  //assign Led = WD3[6:0];
-  
    
   reg [31:0] contHz=32'h0;
   
@@ -197,15 +195,13 @@ assign s=(contDisplay==2'h3)? valShow[15:12] : //DISPLAY 1 "S"
 
   Mux2 #(32) MuxALUA(ALUSrcA, Pc, A, SrcA);
   //Mux4 MuxALUB(ALUSrcB, B, 1, SignImm, SignImm, SrcB);
-  //(Alusrcb<2)?Alusrcb:{switch,Alusrcb[0]}
   Mux4 MuxALUB((ALUSrcB[1])?{1'h1,SW_En_Data}:ALUSrcB, B, 32'h1, SignImm, {29'h0,in_Data}, SrcB);
-  //,ALUSrcB[0]
   
   ALUControl ALUC(Instr[5:0], ALUOp, ALUControl); //ALUOp
   ALU ALU(ALUControl, SrcA, SrcB, ALUResult, Zero); //ALUControl
   Flopenr #(32) FlopALU(Clk, 1'b0, 1'b1, ALUResult, ALUOut); //Ese 0 es el reset y el 1 es el enable
 
   Mux4 MuxPCsrc(PCSrc, ALUResult, ALUOut, {Pc[31:26],Instr[25:0]}, {Pc[31:26],Instr[25:0]}, PCp);
-  MainControl Control(Clk,Rst,Instr[31:26],IorD,MemWrite,IRWrite,RegDst, MemtoReg,RegWrite,ALUSrcA,ALUSrcB,ALUOp,Branch,PCWrite,PCSrc,NEF);
+  MainControl Control(Clk,Rst,Instr[31:26],IorD,MemWrite,IRWrite,RegDst, MemtoReg,RegWrite,ALUSrcA,ALUSrcB,ALUOp,Branch,PCWrite,PCSrc,NEF,Ctrl_State);
 
 endmodule
