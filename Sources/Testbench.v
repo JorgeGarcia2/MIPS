@@ -7,11 +7,15 @@ wire Clk;
 */
 
 module Testbench;
-  reg Clk_TB, Rst_TB;
+  reg Clk_TB, Rst_TB,selButton;
   wire [6:0] Led;
   wire Clk_ou;
+  wire [6:0] disp7Seg;
+  wire [3:0] selDisp;
+  reg [3:0] selSignal;
+  
 
-  TopModule UU1(Clk_TB, Rst_TB, Led, 1'b1, Clk_ou);
+  TopModule UU1(Clk_TB, Rst_TB, Led, 1'b1, Clk_ou, disp7Seg, selDisp, selSignal, selButton);
 
   //TopModule UU1(in_Clk_TB, Rst_TB, Led, 1'b1, Clk);
   initial
@@ -21,6 +25,8 @@ module Testbench;
       
       Clk_TB = 0;
       Rst_TB = 0;
+		selSignal = 0;
+		selButton = 0;
       #1.5 Rst_TB = 1;
       #0.5 Rst_TB = 0;
       #700

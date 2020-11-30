@@ -33,7 +33,8 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, selSignal,selButt
 	always@(posedge in_Clk)
 	begin
 		if(cont50Hz==0)begin
-			cont50Hz = 20'hF4240;
+			//cont50Hz = 20'hF4240;
+			cont50Hz = 20'h1;
 			Hz50CLK=!Hz50CLK;end
 		else begin cont50Hz=cont50Hz-1'h1; end
 	end
@@ -152,8 +153,8 @@ assign s=(contDisplay==2'h3)? 4'hA : //DISPLAY 1 "S"
 	begin
 		if(contHz==0)
 			begin
-			//contHz=32'h1;
-			contHz=32'h00FAF080; //32'h01FAF080
+			contHz=32'h1;
+			//contHz=32'h00FAF080; //32'h01FAF080
 			Hz1CLK=!Hz1CLK;
 			end
 		else
