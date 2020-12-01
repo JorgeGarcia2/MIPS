@@ -1,13 +1,13 @@
 NET "in_Clk" LOC = "B8" ;
 
-NET "Led[0]" LOC = "J14" ;
-NET "Led[1]" LOC = "J15" ;
-NET "Led[2]" LOC = "K15" ;
-NET "Led[3]" LOC = "K14" ;
-NET "Led[4]" LOC = "E16" ;
-NET "Led[5]" LOC = "P16" ;
-NET "Led[6]" LOC = "E4" ;
-NET "Clk" LOC = "P4" ;
+NET "Led[0]" LOC = "J15" ;
+NET "Led[1]" LOC = "K15" ;
+NET "Led[2]" LOC = "K14" ;
+NET "Led[3]" LOC = "E16" ;
+NET "Led[4]" LOC = "P16" ;
+NET "Led[5]" LOC = "E4" ;
+NET "Led[2]" LOC = "P4" ;
+NET "Clk" LOC = "J14" ;
 
 NET "Rst" LOC = "H13" ;
 #NET "selButton" LOC = "B18";
@@ -20,6 +20,8 @@ NET "SW_En_Data" LOC = "N17";
 NET "in_Data[0]" LOC = "G18";
 NET "in_Data[1]" LOC = "H18";
 NET "in_Data[2]" LOC = "K18";
+
+NET "Data_Mux" LOC = "R17";
 
 #NET "selSignal[3]" LOC = "R17";
 

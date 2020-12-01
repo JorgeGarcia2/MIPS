@@ -13,11 +13,11 @@
 
 
 //module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, selSignal,selButton);
-module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Data,selButton);
+module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Data,selButton,Data_Mux);
   input in_Clk, Rst, EnClk, selButton,SW_En_Data;
   input [2:0] in_Data;
   output wire [6:0] Led;
-  output wire Clk;
+  output wire Clk,Data_Mux;
   output wire [7:0] disp7Seg;
   output wire [3:0] selDisp;
 
@@ -115,12 +115,22 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 						4'b1110;
 	
 	//SHOW EACH DISPLAY
-	reg [11:0] valShow;
+	reg [15:0] valShow;
 	always@(negedge Clk)
 	begin
-		if(RegWrite)
-		begin
-			valShow=WD3[11:0];
+		Finish_F=(Ctrl_State==4'h1 and Inst[31:26]==6'b111111)?1:0;
+		if(not Finish_F) begin
+			if(Data_Mux) begin
+				if(RegWrite) begin
+					valShow[15:8]=WD3[7:0];
+				end
+				if(MemWrite) begin
+					valShow[7:0]=WD[7:0];
+				end
+			end
+			else begin
+				valShow={Pc[7:0],4'h0,Ctrl_State};
+			end
 		end
 	end
 
@@ -128,11 +138,12 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 	wire [3:0] s;
 	wire [3:0] Ctrl_State;
 
-	assign s=(contDisplay==2'h3)? Ctrl_State   : //DISPLAY 1 "S"
-				(contDisplay==2'h2)? valShow[11:8]: //DISPLAY 2 "_"
-				(contDisplay==2'h1)? valShow[7:4] : //DISPLAY 3 "0"
-				(contDisplay==2'h0)? valShow[3:0] : //DISPLAY 4  "DATO"
+	assign s=(contDisplay==2'h3)? valShow[15:12]: //DISPLAY 1 "S"
+				(contDisplay==2'h2)? valShow[11:8] : //DISPLAY 2 "_"
+				(contDisplay==2'h1)? valShow[7:4]  : //DISPLAY 3 "0"
+				(contDisplay==2'h0)? valShow[3:0]  : //DISPLAY 4  "DATO"
 				4'b1111; //EXTRA
+	
 	DispSeg DS(s,disp7seg);
 							 	  //abcd_efgp
 /*assign disp7Seg  =  (s==4'h0)? 8'b0000_0011: //0
@@ -155,13 +166,14 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
   ///////
   
   reg Hz1CLK = 1'h0;
+  reg Finish_F;
   assign Clk=(clkEN==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
   
   //assign Led = (RegWrite==1)? WD3[6:0]:0; //concatenar los bits de CONTROL
   assign Led[2:0] = in_Data[2:0]; //concatenar los bits de CONTROL
   assign Led[5:3] = 3'h0; //concatenar los bits de CONTROL 
-  assign Led[6] = SW_En_Data; //concatenar los bits de CONTROL
-   
+  assign Led[6] = Finish_F; //concatenar los bits de CONTROL
+  
   reg [31:0] contHz=32'h0;
   
 	always@(posedge in_Clk)
