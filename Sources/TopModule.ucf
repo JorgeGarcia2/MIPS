@@ -11,7 +11,7 @@ NET "Clk" LOC = "J14" ;
 
 NET "Rst" LOC = "H13" ;
 #NET "selButton" LOC = "B18";
-NET "selButton" LOC = "E18";
+#NET "selButton" LOC = "E18";
 
 NET "EnClk" LOC = "L14" ;
 #NET "EnClk" LOC = "B18" ;

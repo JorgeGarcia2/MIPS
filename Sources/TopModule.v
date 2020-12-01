@@ -10,11 +10,13 @@
 `include "RegMem.v"
 `include "SignExt.v"
 `include "DispSeg.v"
+`include "FreqDiv.v"
 
 
 //module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, selSignal,selButton);
-module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Data,selButton,Data_Mux);
-  input in_Clk, Rst, EnClk, selButton,SW_En_Data,Data_Mux;
+//module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Data,selButton,Data_Mux);
+module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Data,Data_Mux);
+  input in_Clk, Rst, EnClk,SW_En_Data,Data_Mux;
   input [2:0] in_Data;
   output wire [6:0] Led;
   output wire Clk;
@@ -30,43 +32,20 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
   
   ////////////////////////////////////////////////////////////////////////////////////////Shield
   //frequency divider //50MHZ -> 50HZ
-	reg Hz50CLK = 1'h0;
-	reg [19:0] cont50Hz = 20'h0;
-	always@(posedge in_Clk)
-	begin
-		if(cont50Hz==0)begin
-			cont50Hz = 20'hF4240;
-			//cont50Hz = 20'h1;
-			Hz50CLK=!Hz50CLK;end
-		else begin cont50Hz=cont50Hz-1'h1; end
-	end
-	//Bounce filter register
-	reg [3:0] bReg=4'h0;
-	reg [3:0] tmpReg=4'h0;
-	wire clkEN;
-	always@(posedge Hz50CLK)
-	begin
-	/////////////////antirrebotes
-		bReg[3]=bReg[2];
-		bReg[2]=bReg[1];
-		bReg[1]=bReg[0];
-		bReg[0]=EnClk;
-	end
 	
-	assign clkEN=&bReg;
+	wire Hz50CLK; //50HZ
+	wire Hz1kCLK;  //1KHZ CLK DISPLAY
 	
-	reg [15:0] cont1kHz;
-	reg CLKD2x;//1KHZ CLK DISPLAY
-	always@(posedge in_Clk)
-	begin	
-		if(cont1kHz==0) 
-			begin cont1kHz=16'hC350;  CLKD2x=!CLKD2x;end
-		else begin cont1kHz=cont1kHz-1'h1; end
-	end
+	FreqDiv #(1000000) FQ_50Hz(in_Clk, Hz50CLK);
+	
+	FreqDiv #(50000) FQ_1kHz(in_Clk, Hz1kCLK);
+	
 
+
+/*
 	//DISPLAY MULTIPLEXER COUNTER
 	reg [1:0] contDisplay = 2'h3;
-	always@(posedge CLKD2x)
+	always@(posedge Hz1kCLK)
 	begin
 		if(contDisplay==0) 
 			begin contDisplay=2'h3; end
@@ -78,6 +57,7 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 						(contDisplay==2'h2)? 4'b1011:
 						(contDisplay==2'h1)? 4'b1101:
 						4'b1110;
+	*/
 	
 	//SHOW EACH DISPLAY
 	
@@ -103,6 +83,8 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 		end
 	end
 	
+	
+	/*
 	//SHOW SYMBOLS IN DISPLAY (DECODER)
 	wire [3:0] s;
 
@@ -111,16 +93,34 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 				(contDisplay==2'h1)? valShow[7:4]  : //DISPLAY 3 "0"
 				(contDisplay==2'h0)? valShow[3:0]  : //DISPLAY 4  "DATO"
 				4'b1111; //EXTRA
+	*/
 	
-	DispSeg DS(s,disp7seg);
-  
-  reg Hz1CLK = 1'h0;
-  assign Clk=(clkEN==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
+	//DispSeg DS(s,disp7Seg);
+	DispSeg DS(clk, valShow[3:0], valShow[7:4], valShow[11:8], valShow[15:12], disp7Seg, selDisp);
+	
+  //wire Hz1CLK;
+  reg Hz1CLK;
+  assign Clk=(EnClk==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
+  //assign Clk=(EnClk==1'h1 && Finish_F==1'h0)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
   
   assign Led[2:0] = in_Data[2:0]; //concatenar los bits de CONTROL
   assign Led[5:3] = 3'h0; //concatenar los bits de CONTROL 
   assign Led[6] = Finish_F; //concatenar los bits de CONTROL
   
+  /*
+	FreqDiv #(10000000) FQ_1Hz(in_Clk, Hz1CLK);
+	
+	always@(posedge in_Clk)
+	begin			
+			if(Rst==1) Finish_F=0;
+			else Finish_F=(Instr==32'hFFFFFFFF)? 1 : 0;
+	end
+	*/
+	
+			//if(Finish_F==0)
+			//begin
+	
+  ///*
   reg [31:0] contHz=32'h0;
   
 	always@(posedge in_Clk)
@@ -147,6 +147,7 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 					end
 			end
 	end
+	//*/
   //END SHIELD
 
 

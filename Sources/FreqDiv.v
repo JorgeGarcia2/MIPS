@@ -9,7 +9,7 @@ module FreqDiv #(parameter FREQ = 4)(Clk_in, Clk_out);
 
   always@(posedge Clk_in) begin
 		if(contHz == 0)begin
-			contHz = FREQ;
+			contHz = FREQ-1;
 			Clk_out = !Clk_out;
         end
         else contHz = contHz - 1'h1;
