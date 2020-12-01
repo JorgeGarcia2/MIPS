@@ -51,39 +51,10 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 		bReg[2]=bReg[1];
 		bReg[1]=bReg[0];
 		bReg[0]=EnClk;
-		//tmpReg={bReg[3:1],EnClk};
-		//bReg=tmpReg;
 	end
-	//assign clkEN = bReg[3]&&bReg[2]&&bReg[1]&bReg[0];
-	//assign clkEN=((&bReg)==1'h1)? 1'h1:1'h0;
 	
-	//assign clkEN=((bReg[0])&&(bReg[1])&&(bReg[2])&&(bReg[3]))? 1'h1:1'h0;
 	assign clkEN=&bReg;
 	
-	
-	//Mux Data Part 
-	/*
-		wire [15:0] Data16x;
-		wire [31:0] Data32x;
-		assign Dato16x=(selButton==1'h0)? Data32x[15:0] : Data32x[31:16];
-		//assign Data32x=Pc;
-		//assign Dato32x=(selSignal==4'h0)? Pc :
-		//					(selSignal==4'h1)? RD :
-		//					(selSignal==4'h2)? WD3 :
-		//					Instr;
-		assign Dato32x=(selSignal==4'h0)? 32'h0102ABCF :
-							(selSignal==4'h1)? 32'h0123ADCA :
-							(selSignal==4'h2)? 32'h0456AFCB :
-							32'hFFFFFFFF;
-	*/
-
-
-
-
-	//assign s=(contDisplay==2'h3)? 4'hA : //DISPLAY 1 "S"						
-	  //assign Led = (RegWrite==1)? Data16x[6:0]:0; //concatenar los bits de CONTROL
-		
-		//////////////////////////////////////////////////DISPLAY
 	reg [15:0] cont1kHz;
 	reg CLKD2x;//1KHZ CLK DISPLAY
 	always@(posedge in_Clk)
@@ -92,12 +63,6 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 			begin cont1kHz=16'hC350;  CLKD2x=!CLKD2x;end
 		else begin cont1kHz=cont1kHz-1'h1; end
 	end
-
-	/*//DISPLAY MULTIPLEXER COUNTER
-	always@(posedge CLKD2x)
-	begin
-		selDisp = selDisp << 1;
-	end*/
 
 	//DISPLAY MULTIPLEXER COUNTER
 	reg [1:0] contDisplay = 2'h3;
@@ -123,32 +88,10 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 	reg [15:0] Pc_state;
 	reg [15:0] MemData_RegData;
 	
-	
    Mux2 #(16) MuxDisplay(Data_Mux, Pc_state, MemData_RegData, valShow);
-	/*
-	always@(negedge Clk)
-	begin
-		//Finish_F=(Ctrl_State==4'h0 && Instr[31:26]==6'b111111)?1:0;
-		Finish_F=(Instr==32'hFFFFFFFF)? 1 : 0;
-		if(!Finish_F) begin
-			if(Data_Mux) begin
-				if(RegWrite) begin
-					valShow[15:8]=WD3[7:0];
-				end
-				if(MemWrite) begin
-					valShow[7:0]=B[7:0];
-				end
-			end
-			else begin
-				valShow={Pc[7:0],4'h0,Ctrl_State};
-			end
-		end
-	end
-	*/
 	
 	always@(negedge Clk)
 	begin
-		//Finish_F=(Ctrl_State==4'h0 && Instr[31:26]==6'b111111)?1:0;
 		if(!Finish_F) begin
 			if(RegWrite) begin
 				MemData_RegData[15:8]=WD3[7:0];
@@ -158,12 +101,8 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 			end
 			Pc_state={Pc[7:0],4'h0,Ctrl_State};
 		end
-		//if(Data_Mux) valShow=Pc_state;
-		//else valShow=MemData_RegData;
 	end
 	
-	
-
 	//SHOW SYMBOLS IN DISPLAY (DECODER)
 	wire [3:0] s;
 
@@ -173,35 +112,11 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 				(contDisplay==2'h0)? valShow[3:0]  : //DISPLAY 4  "DATO"
 				4'b1111; //EXTRA
 	
-	//DispSeg DS(s,disp7seg);
-	
-	///*
-							 	  //abcd_efgp
-assign disp7Seg  =  (s==4'h0)? 8'b0000_0011: //0
-						  (s==4'h1)? 8'b1001_1111: //1
-						  (s==4'h2)? 8'b0010_0101: //2
-						  (s==4'h3)? 8'b0000_1101: //3
-						  (s==4'h4)? 8'b1001_1001: //4
-						  (s==4'h5)? 8'b0100_1001: //5
-						  (s==4'h6)? 8'b0100_0001: //6
-						  (s==4'h7)? 8'b0001_1111: //7
-						  (s==4'h8)? 8'b0000_0001: //8
-						  (s==4'h9)? 8'b0000_1001: //9
-						  (s==4'hA)? 8'b0001_0001: //A
-						  (s==4'hB)? 8'b1100_0001: //B
-						  (s==4'hC)? 8'b0110_0011: //C
-						  (s==4'hD)? 8'b1000_0101: //D
-						  (s==4'hE)? 8'b0110_0001: //E
-						  (s==4'hF)? 8'b0111_0001: //F		  
-						  8'b11101110; //_.
-						  
-	//*/
-  ///////
+	DispSeg DS(s,disp7seg);
   
   reg Hz1CLK = 1'h0;
   assign Clk=(clkEN==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
   
-  //assign Led = (RegWrite==1)? WD3[6:0]:0; //concatenar los bits de CONTROL
   assign Led[2:0] = in_Data[2:0]; //concatenar los bits de CONTROL
   assign Led[5:3] = 3'h0; //concatenar los bits de CONTROL 
   assign Led[6] = Finish_F; //concatenar los bits de CONTROL
