@@ -18,7 +18,7 @@
 module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Data,Data_Mux);
   input in_Clk, Rst, EnClk,SW_En_Data,Data_Mux;
   input [2:0] in_Data;
-  output wire [6:0] Led;
+  output [6:0] Led;
   output wire Clk;
   output wire [7:0] disp7Seg;
   output wire [3:0] selDisp;
@@ -32,12 +32,10 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
   
   ////////////////////////////////////////////////////////////////////////////////////////Shield
   //frequency divider //50MHZ -> 50HZ
-	wire Hz50CLK; //50HZ
-	wire Hz1kCLK;  //1KHZ CLK DISPLAY
-	
-	FreqDiv #(1000000) FQ_50Hz(in_Clk, Hz50CLK);
+	//wire Hz50CLK; //50HZ
+	//FreqDiv #(1000000) FQ_50Hz(1'h1,in_Clk, Hz50CLK);
 
-	reg Finish_F;
+	reg Finish_F=0;
 	wire [3:0] Ctrl_State;
   
 	wire [15:0] valShow;
@@ -59,23 +57,21 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 		end
 	end
 	
-	FreqDiv #(50000) FQ_1kHz(in_Clk, Hz1kCLK);
+	wire Hz1kCLK;  //1KHZ CLK DISPLAY
+	FreqDiv #(50000) FQ_1kHz(1'h1,in_Clk, Hz1kCLK);
 	
 	DispSeg DS(Hz1kCLK, valShow[3:0], valShow[7:4], valShow[11:8], valShow[15:12], disp7Seg, selDisp);
 	
-  reg Hz1CLK;
-  assign Clk=(EnClk==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
-  
+ 
   assign Led[2:0] = in_Data[2:0]; //concatenar los bits de CONTROL
   assign Led[5:3] = 3'h0; //concatenar los bits de CONTROL 
   assign Led[6] = Finish_F; //concatenar los bits de CONTROL
   
   
-  reg [31:0] contHz=32'h0;
+  //reg [31:0] contHz=32'h0;
   
 	always@(posedge in_Clk)
 	begin
-		
 		if(Rst==1)
 		begin
 			Finish_F=0;
@@ -83,6 +79,7 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 		else begin
 		Finish_F=(Instr==32'hFFFFFFFF)? 1 : 0;
 		end
+			/*
 			if(Finish_F==0)
 			begin
 				if(contHz==0)
@@ -96,8 +93,15 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 						contHz=contHz-1'h1;
 					end
 			end
+			*/
 	end
-	//*/
+	
+	wire Hz1CLK;
+   assign Clk=(EnClk==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
+  
+	
+	FreqDiv #(32'h00FAF080) FQ_1Hz(!Finish_F,in_Clk, Hz1CLK);
+	
   //END SHIELD
 
 
