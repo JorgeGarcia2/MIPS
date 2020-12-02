@@ -3,13 +3,13 @@ module InstrDataMem(We, Clk, Addr, Wd, Rd);
   input [31:0] Addr, Wd;
   output wire [31:0] Rd;
  
-  reg [31:0] MEM[63:0];
+  reg [31:0] MEM[95:0];
 
   initial 
     //$readmemh("../Sources/instrData_data.data", MEM, 0, 63); 
   begin
     //$readmemh("../Sources/instrData_data.hex", MEM); 
-      $readmemh("../Sources/instrData_data.data", MEM, 0, 63); 
+      $readmemh("../Sources/instrData_data.data", MEM, 0, 95); 
     //$readmemh("../Sources/instrData_data.coe", MEM); 
     //$readmemh("InstrMem.mem", MEM); 
   end
