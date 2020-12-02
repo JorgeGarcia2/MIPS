@@ -3,7 +3,7 @@ module DispSeg(clk, d1, d2, d3, d4, outDisp, selDisp);
   input clk;
   input [3:0] d1, d2, d3, d4;
   output reg [7:0] outDisp;
-  output reg [3:0] selDisp;
+  output wire [3:0] selDisp;
   
   //reg clk_1k;
   reg [3:0] digit=0;
@@ -20,24 +20,24 @@ module DispSeg(clk, d1, d2, d3, d4, outDisp, selDisp);
 	if(cont==3) cont=0;
 	else cont = cont + 1;
   end
-  //assign selDisp = ~( 1 << cont );
+  assign selDisp = ~( 1 << cont );
   //Bloque para asignar los digitos a digit
   always @*
     case(cont) 
       0: begin digit <= d1;
-      	 selDisp <= 4'b1110; // Digit 0
+      	 //selDisp <= 4'b1110; // Digit 0
 		 end
       1: begin digit <= d2;
-      	 selDisp <= 4'b1101; // Digit 1
+      	 //selDisp <= 4'b1101; // Digit 1
 		 end
       2: begin digit <= d3; 
-      	 selDisp <= 4'b1011; // Digit 2
+      	 //selDisp <= 4'b1011; // Digit 2
 		 end
       3: begin digit <= d4; 
-      	 selDisp <= 4'b0111; // Digit 3
+      	 //selDisp <= 4'b0111; // Digit 3
 		 end
 	  default: begin digit <= 4'b0; 
-      		   selDisp <= 4'b0000; // ???
+      		   //selDisp <= 4'b0000; // ???
 			   end
     endcase
   

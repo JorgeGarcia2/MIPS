@@ -32,35 +32,11 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
   
   ////////////////////////////////////////////////////////////////////////////////////////Shield
   //frequency divider //50MHZ -> 50HZ
-	
 	wire Hz50CLK; //50HZ
 	wire Hz1kCLK;  //1KHZ CLK DISPLAY
 	
 	FreqDiv #(1000000) FQ_50Hz(in_Clk, Hz50CLK);
-	
-	FreqDiv #(50000) FQ_1kHz(in_Clk, Hz1kCLK);
-	
 
-
-/*
-	//DISPLAY MULTIPLEXER COUNTER
-	reg [1:0] contDisplay = 2'h3;
-	always@(posedge Hz1kCLK)
-	begin
-		if(contDisplay==0) 
-			begin contDisplay=2'h3; end
-		else begin contDisplay=contDisplay-1'h1; end
-	end
-
-	//DISPLAY SELECTOR
-	assign selDisp=(contDisplay==2'h3)? 4'b0111:
-						(contDisplay==2'h2)? 4'b1011:
-						(contDisplay==2'h1)? 4'b1101:
-						4'b1110;
-	*/
-	
-	//SHOW EACH DISPLAY
-	
 	reg Finish_F;
 	wire [3:0] Ctrl_State;
   
@@ -83,44 +59,18 @@ module TopModule(in_Clk, Rst, Led,EnClk,Clk, disp7Seg,selDisp, in_Data,SW_En_Dat
 		end
 	end
 	
+	FreqDiv #(50000) FQ_1kHz(in_Clk, Hz1kCLK);
 	
-	/*
-	//SHOW SYMBOLS IN DISPLAY (DECODER)
-	wire [3:0] s;
-
-	assign s=(contDisplay==2'h3)? valShow[15:12]: //DISPLAY 1 "S"
-				(contDisplay==2'h2)? valShow[11:8] : //DISPLAY 2 "_"
-				(contDisplay==2'h1)? valShow[7:4]  : //DISPLAY 3 "0"
-				(contDisplay==2'h0)? valShow[3:0]  : //DISPLAY 4  "DATO"
-				4'b1111; //EXTRA
-	*/
+	DispSeg DS(Hz1kCLK, valShow[3:0], valShow[7:4], valShow[11:8], valShow[15:12], disp7Seg, selDisp);
 	
-	//DispSeg DS(s,disp7Seg);
-	DispSeg DS(clk, valShow[3:0], valShow[7:4], valShow[11:8], valShow[15:12], disp7Seg, selDisp);
-	
-  //wire Hz1CLK;
   reg Hz1CLK;
   assign Clk=(EnClk==1'h1)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
-  //assign Clk=(EnClk==1'h1 && Finish_F==1'h0)? Hz1CLK:1'h0;  //en lugar de 0 va la entrada del bus
   
   assign Led[2:0] = in_Data[2:0]; //concatenar los bits de CONTROL
   assign Led[5:3] = 3'h0; //concatenar los bits de CONTROL 
   assign Led[6] = Finish_F; //concatenar los bits de CONTROL
   
-  /*
-	FreqDiv #(10000000) FQ_1Hz(in_Clk, Hz1CLK);
-	
-	always@(posedge in_Clk)
-	begin			
-			if(Rst==1) Finish_F=0;
-			else Finish_F=(Instr==32'hFFFFFFFF)? 1 : 0;
-	end
-	*/
-	
-			//if(Finish_F==0)
-			//begin
-	
-  ///*
+  
   reg [31:0] contHz=32'h0;
   
 	always@(posedge in_Clk)
